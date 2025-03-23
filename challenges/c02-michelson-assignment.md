@@ -1,7 +1,7 @@
 Michelson Speed-of-light Measurements
 ================
-(Your name here)
-2020-
+Swasti Jain
+2025
 
 - [Grading Rubric](#grading-rubric)
   - [Individual](#individual)
@@ -76,9 +76,9 @@ library(googlesheets4)
 url <- "https://docs.google.com/spreadsheets/d/1av_SXn4j0-4Rk0mQFik3LLr-uf0YdA06i3ugE6n-Zdo/edit?usp=sharing"
 
 # Parameters
-LIGHTSPEED_VACUUM    <- 299792.458 # Exact speed of light in a vacuum (km / s)
-LIGHTSPEED_MICHELSON <- 299944.00  # Michelson's speed estimate (km / s)
-LIGHTSPEED_PM        <- 51         # Michelson error estimate (km / s)
+LIGHTSPEED_VACUUM <- 299792.458 # Exact speed of light in a vacuum (km / s)
+LIGHTSPEED_MICHELSON <- 299944.00 # Michelson's speed estimate (km / s)
+LIGHTSPEED_PM <- 51 # Michelson error estimate (km / s)
 ```
 
 *Background*: In 1879 Albert Michelson led an experimental campaign to
@@ -140,9 +140,9 @@ df_michelson %>% glimpse()
 
 ``` r
 ## TODO: Compute summaries
-df_q1 <- df_michelson %>% 
-  group_by(Distinctness) %>% 
-    summarize(
+df_q1 <- df_michelson %>%
+  group_by(Distinctness) %>%
+  summarize(
     n = n(),
     mean_v = mean(Velocity),
   )
@@ -157,8 +157,18 @@ df_q1 %>%
 | 2            |  39 | 299858.5 |
 | 1            |  15 | 299808.0 |
 
-**Observations**: - Write your observations here! - (Your response
-here) - Why might your table differ from Michelson’s?
+**Observations**:
+
+\- Write your observations here! -
+
+Overall the numbers seem pretty close.
+
+- Why might your table differ from Michelson’s?
+
+These numbers might be affected by error during Michelson’s
+experimentation and data collection or he rounded his numbers when
+documenting them. Considering these are huge numbers he may have
+determined that the last digit was not so significant.
 
 The Velocity likely correlates to the distinctness of the image. As
 mentioned earlier, the levels of distinctness measure the level of
@@ -177,7 +187,7 @@ in the dataset.
 
 ``` r
 ## TODO: Adjust the data, assign to df_q2
-df_q2 <- df_michelson %>% 
+df_q2 <- df_michelson %>%
   mutate(VelocityVacuum = Velocity + 92)
 
 df_q2
@@ -224,9 +234,11 @@ human judgment.\[2\]
 ``` r
 ## TODO: Compare Michelson's estimate and error against the true value
 ## Your code here!
-df_q2 %>% 
-  summarize(error = LIGHTSPEED_VACUUM - LIGHTSPEED_MICHELSON,
-            LIGHTSPEED_PM)
+df_q2 %>%
+  summarize(
+    error = LIGHTSPEED_VACUUM - LIGHTSPEED_MICHELSON,
+    LIGHTSPEED_PM
+  )
 ```
 
     ## # A tibble: 1 × 2
@@ -245,10 +257,9 @@ Michelson’s estimate of his error is far less than the true error.
 his error.
 
 He predicted 51 km/s when that was 100 km/s away from the real range of
-error. This is a significant error from his range of uncertainty. Nearly
-three times the error he predicted. This could have extremely
-significant issues as the error multiplies for more precise
-calculations.
+error. This is an immense error from his range of uncertainty. Nearly
+three times the error he predicted. This could have extreme issues as
+the error multiplies for more precise calculations.
 
 The following plot shows all of Michelson’s data as a [control
 chart](https://en.wikipedia.org/wiki/Control_chart); this sort of plot
@@ -285,7 +296,6 @@ df_q2 %>%
     names_to = "source",
     values_to = "velocity"
   ) %>%
-
   ggplot(aes(Date, velocity)) +
   geom_hline(
     yintercept = LIGHTSPEED_MICHELSON,
@@ -299,7 +309,6 @@ df_q2 %>%
     yintercept = LIGHTSPEED_MICHELSON + LIGHTSPEED_PM,
     linetype = "dashed"
   ) +
-
   geom_line(
     data = . %>%
       group_by(Date, source) %>%
@@ -311,8 +320,7 @@ df_q2 %>%
     mapping = aes(y = velocity),
     size = 0.8
   ) +
-
-  facet_grid(source~.) +
+  facet_grid(source ~ .) +
   theme_minimal() +
   labs(
     x = "Date of Measurement (1879)",
@@ -335,7 +343,7 @@ around 299,900 km/s.
 
 Differences -
 
-The outliers are more significant in the real measured data rather than
+The outliers are more dramatic in the real measured data rather than
 simulated data. The furthest outlier is over ~200 km/s above from the
 mean line for the real data and the furthest outlier is under ~200 km/s
 beneath the mean line.
@@ -343,13 +351,11 @@ beneath the mean line.
 ### **q5** You have access to a few other variables. Construct a **at least three** visualizations of `VelocityVacuum` against these other factors. Are there other patterns in the data that might help explain the difference between Michelson’s estimate and `LIGHTSPEED_VACUUM`?
 
 ``` r
-# 
-v_mean <-
-  df_q2 %>%
+#
+v_mean <- df_q2 %>%
   summarize(m = mean(VelocityVacuum)) %>%
   pull(m)
-v_sd <-
-  df_q2 %>%
+v_sd <- df_q2 %>%
   summarize(s = sd(VelocityVacuum)) %>%
   pull(s)
 
@@ -363,7 +369,6 @@ df_q2 %>%
     names_to = "source",
     values_to = "velocity"
   ) %>%
-
   ggplot(aes(Temp, velocity)) +
   geom_hline(
     yintercept = LIGHTSPEED_MICHELSON,
@@ -377,78 +382,10 @@ df_q2 %>%
     yintercept = LIGHTSPEED_MICHELSON + LIGHTSPEED_PM,
     linetype = "dashed"
   ) +
-
   geom_hline(
     yintercept = LIGHTSPEED_MICHELSON + LIGHTSPEED_PM,
     linetype = "dashed"
   ) +
-
-  geom_line(
-    data = . %>%
-      group_by(Temp, source) %>%
-      summarize(velocity_mean = mean(velocity)),
-    mapping = aes(y = velocity_mean),
-    color = "grey50"
-  ) +
-  geom_point(
-    mapping = aes(y = velocity),
-    size = 0.8
-  ) +
-
-  # facet_grid(source~.) +
-  theme_minimal() +
-  labs(
-    x = "Temperature (F)",
-    y = "Velocity (in Vacuum)"
-  )
-```
-
-    ## `summarise()` has grouped output by 'Temp'. You can override using the
-    ## `.groups` argument.
-
-![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
-
-``` r
-# 
-v_mean <-
-  df_q2 %>%
-  summarize(m = mean(VelocityVacuum)) %>%
-  pull(m)
-v_sd <-
-  df_q2 %>%
-  summarize(s = sd(VelocityVacuum)) %>%
-  pull(s)
-
-## Visualize
-set.seed(101)
-df_q2 %>%
-  # mutate(Simulated = rnorm(n(), mean = v_mean, sd = v_sd)) %>%
-  rename(Real = VelocityVacuum) %>%
-  pivot_longer(
-    cols = c(Real),
-    names_to = "source",
-    values_to = "velocity"
-  ) %>%
-
-  ggplot(aes(Temp, velocity, color = Distinctness)) +
-  geom_hline(
-    yintercept = LIGHTSPEED_MICHELSON,
-    linetype = "dotted"
-  ) +
-  geom_hline(
-    yintercept = LIGHTSPEED_MICHELSON - LIGHTSPEED_PM,
-    linetype = "dashed"
-  ) +
-  geom_hline(
-    yintercept = LIGHTSPEED_MICHELSON + LIGHTSPEED_PM,
-    linetype = "dashed"
-  ) +
-
-  geom_hline(
-    yintercept = LIGHTSPEED_MICHELSON + LIGHTSPEED_PM,
-    linetype = "dashed"
-  ) +
-
   geom_line(
     data = . %>%
       group_by(Temp, source) %>%
@@ -475,7 +412,7 @@ df_q2 %>%
 ![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
-# 
+#
 v_mean <-
   df_q2 %>%
   summarize(m = mean(VelocityVacuum)) %>%
@@ -495,7 +432,6 @@ df_q2 %>%
     names_to = "source",
     values_to = "velocity"
   ) %>%
-
   ggplot(aes(Temp, velocity, color = Distinctness)) +
   geom_hline(
     yintercept = LIGHTSPEED_MICHELSON,
@@ -509,17 +445,10 @@ df_q2 %>%
     yintercept = LIGHTSPEED_MICHELSON + LIGHTSPEED_PM,
     linetype = "dashed"
   ) +
-
   geom_hline(
     yintercept = LIGHTSPEED_MICHELSON + LIGHTSPEED_PM,
     linetype = "dashed"
   ) +
-   geom_hline(
-    yintercept = LIGHTSPEED_VACUUM,
-    linetype = "dashed",
-    color = "firebrick"
-  ) +
-
   geom_line(
     data = . %>%
       group_by(Temp, source) %>%
@@ -545,6 +474,102 @@ df_q2 %>%
 
 ![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
+``` r
+#
+v_mean <-
+  df_q2 %>%
+  summarize(m = mean(VelocityVacuum)) %>%
+  pull(m)
+v_sd <-
+  df_q2 %>%
+  summarize(s = sd(VelocityVacuum)) %>%
+  pull(s)
+
+## Visualize
+set.seed(101)
+df_q2 %>%
+  # mutate(Simulated = rnorm(n(), mean = v_mean, sd = v_sd)) %>%
+  rename(Real = VelocityVacuum) %>%
+  pivot_longer(
+    cols = c(Real),
+    names_to = "source",
+    values_to = "velocity"
+  ) %>%
+  ggplot(aes(Temp, velocity, color = Distinctness)) +
+  geom_hline(
+    yintercept = LIGHTSPEED_MICHELSON,
+    linetype = "dotted"
+  ) +
+  geom_hline(
+    yintercept = LIGHTSPEED_MICHELSON - LIGHTSPEED_PM,
+    linetype = "dashed"
+  ) +
+  geom_hline(
+    yintercept = LIGHTSPEED_MICHELSON + LIGHTSPEED_PM,
+    linetype = "dashed"
+  ) +
+  geom_hline(
+    yintercept = LIGHTSPEED_MICHELSON + LIGHTSPEED_PM,
+    linetype = "dashed"
+  ) +
+  geom_hline(
+    yintercept = LIGHTSPEED_VACUUM,
+    linetype = "dashed",
+    color = "firebrick"
+  ) +
+  geom_line(
+    data = . %>%
+      group_by(Temp, source) %>%
+      summarize(velocity_mean = mean(velocity)),
+    mapping = aes(y = velocity_mean),
+    color = "grey50"
+  ) +
+  geom_point(
+    mapping = aes(y = velocity),
+    size = 0.8
+  ) +
+
+  # facet_grid(source~.) +
+  theme_minimal() +
+  labs(
+    x = "Temperature (F)",
+    y = "Velocity (in Vacuum)"
+  )
+```
+
+    ## `summarise()` has grouped output by 'Temp'. You can override using the
+    ## `.groups` argument.
+
+![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+``` r
+df_q2 %>%
+  rename(Real = VelocityVacuum) %>%
+  pivot_longer(
+    cols = c(Real),
+    names_to = "source",
+    values_to = "velocity"
+  ) %>%
+  ggplot(aes(velocity)) +
+  geom_bar()
+```
+
+![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+``` r
+df_q2 %>%
+  rename(Real = VelocityVacuum) %>%
+  pivot_longer(
+    cols = c(Real),
+    names_to = "source",
+    values_to = "velocity"
+  ) %>%
+  ggplot(aes(Date, velocity, color = Distinctness)) +
+  geom_point()
+```
+
+![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
 **Observations**:
 
 - Graph 1: Removed Simulated Data and Plotted Velocity (in Vacuum)
@@ -566,7 +591,7 @@ df_q2 %>%
 - Graph 3: Added LIGHTSPEED_VACUUM Horizontal Line
   - Lastly I added a horizontal line for the lightspeed_vacuum value to
     see how far away the entire data set is from the ‘real’ mean value.
-    It is interesting to see that the discrepancy is so significant that
+    It is interesting to see that the discrepancy is so disparate that
     all but two data points are over that plotted value.
 
 ## Bibliography
