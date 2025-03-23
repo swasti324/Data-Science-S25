@@ -1,7 +1,7 @@
 RMS Titanic
 ================
-(Your name here)
-2020-
+Swasti Jain
+2025
 
 - [Grading Rubric](#grading-rubric)
   - [Individual](#individual)
@@ -123,7 +123,8 @@ glimpse(df_titanic)
 ``` r
 ## NOTE: No need to edit! We'll cover how to
 ## do this calculation in a later exercise.
-df_titanic %>% summarize(total = sum(n))
+df_titanic %>%
+  summarize(total = sum(n))
 ```
 
     ## # A tibble: 1 × 1
@@ -153,8 +154,8 @@ df_titanic %>% summarize(total = sum(n))
 
 df_titanic %>%
   filter(Survived == "Yes") %>%
-    ggplot() +
-    geom_col(aes(x = Class,y = n, fill = Sex), position="dodge")
+  ggplot() +
+  geom_col(aes(x = Class, y = n, fill = Sex), position = "dodge")
 ```
 
 ![](c01-titanic-assignment_files/figure-gfm/q3-task-1.png)<!-- -->
@@ -216,8 +217,8 @@ df_prop
 ``` r
 df_prop %>%
   filter(Survived == "Yes") %>%
-    ggplot() +
-    geom_col(aes(x = Class,y = Prop, fill = Sex), position="dodge", color = "black")
+  ggplot() +
+  geom_col(aes(x = Class, y = Prop, fill = Sex), position = "dodge", color = "black")
 ```
 
     ## Warning: Removed 2 rows containing missing values or values outside the scale range
@@ -242,9 +243,12 @@ additional variables!
 ``` r
 df_prop %>%
   filter(Survived == "Yes") %>%
-    ggplot() +
-    geom_col(aes(x = Class,y = Prop, fill = Sex), position="dodge") +
-    facet_grid(cols = vars(Age))
+  ggplot() +
+  geom_col(
+    aes(x = Class, y = Prop, fill = Sex),
+    position = "dodge"
+  ) +
+  facet_grid(cols = vars(Age))
 ```
 
     ## Warning: Removed 2 rows containing missing values or values outside the scale range
