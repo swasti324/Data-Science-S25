@@ -1,6 +1,6 @@
 Getting Started: Diamonds
 ================
-(Your name here)
+Swasti Jain
 2020-
 
 - [Grading Rubric](#grading-rubric)
@@ -98,14 +98,13 @@ document your observations.
 ``` r
 ## TASK: Plot `price` vs `carat` below
 
-ggplot(            # 1. Starting a ggplot
-  data = diamonds  # 2. Dataset to visualize
-) +                # 3. Adding elements to the plot
-  geom_point(      # 4. Geometry
-    mapping = aes( # 5. `Aes`thetic mapping
-      x = carat,   # 5.1. Mapping the `x` variable
-      y = price    # 5.2. Mapping the `y` variable
-    )
+diamonds %>% 
+  ggplot()+
+  geom_point(
+    mapping = aes( 
+      x = carat,   
+      y = price        
+      )
   )
 ```
 
@@ -122,13 +121,12 @@ ggplot(            # 1. Starting a ggplot
 
 ``` r
 ## TASK: Plot `price`, `carat`, and `cut` below
-ggplot(            # 1. Starting a ggplot
-  data = diamonds  # 2. Dataset to visualize
-) +                # 3. Adding elements to the plot
-  geom_point(      # 4. Geometry
-    mapping = aes( # 5. `Aes`thetic mapping
-      x = carat,   # 5.1. Mapping the `x` variable
-      y = price,   # 5.2. Mapping the `y` variable
+diamonds %>% 
+ggplot() +                
+  geom_point(      
+    mapping = aes( 
+      x = carat,   
+      y = price,  
       color = cut
     )
   )
