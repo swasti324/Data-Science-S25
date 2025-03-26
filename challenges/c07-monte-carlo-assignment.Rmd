@@ -1,7 +1,7 @@
 ---
 title: "Estimating Pi With a Shotgun"
-author: "(Your name here)"
-date: 2020-
+author: "Swasti Jain"
+date: 2025-3-24
 output:
   github_document:
     toc: true
@@ -12,17 +12,20 @@ prerequisites:
 *Purpose*: Random sampling is extremely powerful. To build more intuition for how we can use random sampling to solve problems, we'll tackle what---at first blush---doesn't seem appropriate for a random approach: estimating fundamental deterministic constants. In this challenge you'll work through an example of turning a deterministic problem into a random sampling problem, and practice quantifying uncertainty in your estimate.
 
 <!-- include-rubric -->
+
 # Grading Rubric
+
 <!-- -------------------------------------------------- -->
 
 Unlike exercises, **challenges will be graded**. The following rubrics define how you will be graded, both on an individual and team basis.
 
 ## Individual
+
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|----------|----------------|--------------|
-| Effort | Some task __q__'s left unattempted | All task __q__'s attempted |
+|----|----|----|
+| Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
 | Assessed | Observations include claims not supported by the data, or reflect a level of certainty not warranted by the data | Observations are appropriately qualified by the quality & relevance of the data and (in)conclusiveness of the support |
@@ -30,10 +33,10 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 | Code Styled | Violations of the [style guide](https://style.tidyverse.org/) hinder readability | Code sufficiently close to the [style guide](https://style.tidyverse.org/) |
 
 ## Submission
+
 <!-- ------------------------- -->
 
 Make sure to commit both the challenge report (`report.md` file) and supporting files (`report_files/` folder) when you are done! Then submit a link to Canvas. **Your Challenge submission is not complete without all files uploaded to GitHub.**
-
 
 ```{r setup}
 library(tidyverse)
@@ -43,6 +46,7 @@ library(rsample)
 *Background*: In 2014, some crazy Quebecois physicists estimated $\pi$ with a pump-action shotgun[1,2]. Their technique was based on the *Monte Carlo method*, a general strategy for turning deterministic problems into random sampling.
 
 # Monte Carlo
+
 <!-- -------------------------------------------------- -->
 
 The [Monte Carlo method](https://en.wikipedia.org/wiki/Monte_Carlo_method) is the use of randomness to produce approximate answers to deterministic problems. Its power lies in its simplicity: So long as we can take our deterministic problem and express it in terms of random variables, we can use simple random sampling to produce an approximate answer. Monte Carlo has an [incredible number](https://en.wikipedia.org/wiki/Monte_Carlo_method#Applications) of applications; for instance Ken Perlin won an [Academy Award](https://en.wikipedia.org/wiki/Perlin_noise) for developing a particular flavor of Monte Carlo for generating artificial textures.
@@ -52,6 +56,7 @@ I remember when I first learned about Monte Carlo, I thought the whole idea was 
 In this challenge, we'll tackle a deterministic problem (computing $\pi$) with the Monte Carlo method.
 
 ## Theory
+
 <!-- ------------------------- -->
 
 The idea behind estimating $\pi$ via Monte Carlo is to set up a probability estimation problem whose solution is related to $\pi$. Consider the following sets: a square with side length $1$ ($S_t$), and a quarter-circle ($S_c$).
@@ -60,7 +65,6 @@ The idea behind estimating $\pi$ via Monte Carlo is to set up a probability esti
 ## NOTE: No need to edit; this visual helps explain the pi estimation scheme
 tibble(x = seq(0, 1, length.out = 100)) %>%
   mutate(y = sqrt(1 - x^2)) %>%
-
   ggplot(aes(x, y)) +
   annotate(
     "rect",
@@ -80,8 +84,8 @@ tibble(x = seq(0, 1, length.out = 100)) %>%
     x = 0.8, y = 0.8, label = "St",
     size = 8
   ) +
-  scale_x_continuous(breaks = c(0, 1/2, 1)) +
-  scale_y_continuous(breaks = c(0, 1/2, 1)) +
+  scale_x_continuous(breaks = c(0, 1 / 2, 1)) +
+  scale_y_continuous(breaks = c(0, 1 / 2, 1)) +
   theme_minimal() +
   coord_fixed()
 ```
@@ -101,27 +105,40 @@ $$\pi = \mathbb{E}[4 I_{X \in S_c}],$$
 where $\mathbb{E}[Y]$ is syntax for taking the average of $Y$.
 
 ## Implementation
+
 <!-- ------------------------- -->
 
 Remember in `e-stat02-probability` we learned how to estimate probabilities as the limit of frequencies. Use your knowledge from that exercise to generate Monte Carlo data.
 
-### __q1__ Generate a uniform random sample on the unit square
+### **q1** Generate a uniform random sample on the unit square
 
 Pick a sample size $n$ and generate $n$ points *uniform randomly* in the square $x \in [0, 1]$ and $y \in [0, 1]$.
 
-```{r q1-task}
+```{r}
 ## TASK: Choose a sample size and generate samples
-n <- NA_real_ # Choose a sample size
-df_q1 <- NA # Generate the data
+n <- 50000 # Choose a sample size
+
+df_q1 <- tibble(
+  x = runif(n, min = 0, max = 1),
+  y = runif(n, min = 0, max = 1),
+)
+
+ggplot(df_q1, aes(x, y)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Uniformly Distributed Points",
+    x = "x",
+    y = "y"
+  )
 ```
 
 Use the following to check that you've used the correct variable names. (NB. This does not check correctness.)
 
-```{r q1-check}
+```{r}
 ## NOTE: Do not edit this code
 # Correct sample size
 assertthat::assert_that(
-  dim(df_q1) %>% 
+  dim(df_q1) %>%
     .[[1]] == n,
   msg = "The sample size should be `n`"
 )
@@ -133,8 +150,7 @@ assertthat::assert_that(
 print("Good")
 ```
 
-
-###__q2__ Write a helper function
+\###**q2** Write a helper function
 
 Write a helper function `stat(x, y)` whose average (of the data from `q1`), will be $\pi$. Implement a test for correctness of your implementation, based on the equation
 
@@ -144,10 +160,10 @@ $$\pi = \mathbb{E}[4 \times I_{X \in S_c}].$$
 
 Answer the questions below.
 
-```{r q2-task}
+```{r}
 ## TASK: Finish implementing this function
 stat <- function(x, y) {
-  # TODO: Finish implementing this function
+  return(4 * ((x^2 + y^2) <= 1))
 }
 ```
 
@@ -158,20 +174,20 @@ Implement your own assert statements. They should pass using your implementation
 
 # Check the value for points *inside* the circle
 assertthat::assert_that(
-  # tibble(x = ?, y = ?) %>% # Pick a point *inside* the circle
-    mutate(stat = stat(x, y)) %>% 
-    pull(stat) %>% 
-    .[[1]] ==
+  tibble(x = 1, y = 0) %>% # Pick a point *inside* the circle
+    mutate(stat = stat(x, y)) %>%
+    pull(stat) %>%
+    .[[1]] == 4,
   # ???, # Write the correct value of stat() here
   msg = "Incorrect value when a point is inside the circle"
 )
 
 # Check the value for points *outside* the circle
 assertthat::assert_that(
-  # tibble(x = ?, y = ?) %>% # Pick a point *outside* the circle
-    mutate(stat = stat(x, y)) %>% 
-    pull(stat) %>% 
-    .[[1]] ==
+  tibble(x = 0.71, y = 0.71) %>% # Pick a point *outside* the circle
+    mutate(stat = stat(x, y)) %>%
+    pull(stat) %>%
+    .[[1]] == 0,
   # ???, # Write the correct value of stat() here
   msg = "Incorrect value when a point is outside the circle"
 )
@@ -180,30 +196,35 @@ print("Your assertions passed, but make sure they're checking the right thing!")
 
 *Observations*
 
-- You chose a correct value of `stat(x, y)` when `x, y` is *outside* the circle. Why did you choose this value?
-  - (Justify your value here)
-- You chose a correct value of `stat(x, y)` when `x, y` is *inside* the circle. Why did you choose this value?
-  - (Justify your value here)
+-   You chose a correct value of `stat(x, y)` when `x, y` is *outside* the circle. Why did you choose this value?
+    -   I chose (0.71, 0.71) as that is just right out of the bounds of the circle. I wanted to ensure that the function passed this edge case.
+-   You chose a correct value of `stat(x, y)` when `x, y` is *inside* the circle. Why did you choose this value?
+    -   I chose (1, 0) as I saw that as another edge case as it is right inside the bounds of the circle.
 
-### __q3__ Estimate $\pi$
+### **q3** Estimate $\pi$
 
 Using your data in `df_q1`, estimate $\pi$.
 
-```{r q3-task}
+```{r}
 ## TASK: Estimate pi using your data from q1
-df_q3 <- 
-  df_q1 %>% 
-  # TODO: Estimate pi as the column `pi_est`
+df_q3 <-
+  df_q1 %>%
+  mutate(stat = stat(x, y)) %>%
+  summarise(pi_est = mean(stat))
+# collect all the points in the circle where stat == 4
+# divide by the total number of points to equal pi
+
+# TODO: Estimate pi as the column `pi_est`
 df_q3
 ```
 
 Use the following to check that you've used the correct variable names. (NB. This does not check correctness.)
 
-```{r q3-check}
+```{r}
 ## NOTE: Do not edit this code
 # Correct sample size
 assertthat::assert_that(
-  dim(df_q3) %>% 
+  dim(df_q3) %>%
     .[[1]] == 1,
   msg = "This result should have just one row"
 )
@@ -216,24 +237,27 @@ print("Good")
 ```
 
 ## Quantifying Uncertainty
+
 <!-- -------------------------------------------------- -->
 
 You now have an estimate of $\pi$, but how trustworthy is that estimate? In `e-stat06-clt` we discussed *confidence intervals* as a means to quantify the uncertainty in an estimate. Now you'll apply that knowledge to assess your $\pi$ estimate.
 
-### __q4__ Simulation-based inference
+### **q4** Simulation-based inference
 
 Complete the code below to perform a bootstrap resample of your $\pi$ estimate. Answer the questions below.
 
-```{r q4-task}
+```{r}
 ## TASK: Finish the code below
-df_q4 <- 
-  df_q1 %>% 
-  bootstraps(., times = 1000) %>% 
+df_q4 <-
+  df_q1 %>%
+  bootstraps(., times = 1000) %>%
   mutate(
     pi_est = map_dbl(
       splits,
       function(split_df) {
-        analysis(split_df) %>% 
+        analysis(split_df) %>%
+          mutate(stat = stat(x, y)) %>%
+          summarise(pi_est = mean(stat)) %>%
           # Estimate pi (pi_est) using the resampled data;
           # this should be *identical* to the
           # code you wrote for q3
@@ -243,17 +267,18 @@ df_q4 <-
   )
 
 ## NOTE: Do not edit; use this to visualize your results
-df_q4 %>% 
+df_q4 %>%
   ggplot(aes(pi_est)) +
   geom_histogram()
 ```
 
 *Observations*
 
-- What is a range of plausible values, based on the sampling distribution you've generated?
-  - (Your response here)
+-   What is a range of plausible values, based on the sampling distribution you've generated?
+    -   The full range is from around 3.115 to 3.165
+    -   the data displays a normal distribution centered around 3.14, indicating a reasonable result on average.
 
-### __q5__ Bootstrap percentile confidence interval
+### **q5** Bootstrap percentile confidence interval
 
 Compute a bootstrap confidence interval for $\pi$ at the 95% confidence level (`alpha = 0.05`).
 
@@ -261,18 +286,20 @@ Compute a bootstrap confidence interval for $\pi$ at the 95% confidence level (`
 
 ```{r}
 ## TASK: Compute a bootstrap confidence interval at the 95% level (alpha = 0.05)
-df_q5 <- 
-  df_q4 %>% 
+df_q5 <-
+  df_q4 %>%
   summarize(
     # TODO: Compute pi_lo and pi_up
-    # pi_lo = ?
-    # pi_up = ?
+    pi_mean = mean(pi_est),
+    se = sd(pi_est) / sqrt(n),
+    pi_lo = pi_mean - 1.96 * se,
+    pi_up = pi_mean + 1.96 * se
   )
 
 df_q5
 ```
 
-### __q6__ CLT confidence interval
+### **q6** CLT confidence interval
 
 Compute a CLT-based confidence interval for $\pi$ at the 95% confidence level (`alpha = 0.05`). Answer the questions below, comparing with your answer to `q5`.
 
@@ -280,24 +307,32 @@ Compute a CLT-based confidence interval for $\pi$ at the 95% confidence level (`
 
 *Hint 2*: You have computed the same thing (a 95% confidence interval) in both q5 and q6. If they disagree strongly, that suggests that you've done something *wrong* in one of the tasks....
 
-```{r q6-task}
+```{r}
 df_q1 %>%
+  mutate(stat = stat(x, y)) %>%
+  summarise(
+    pi_est = mean(stat),
+    se = sd(stat) / sqrt(n),
+    pi_lo = pi_est - qnorm(1 - (1 - 0.99) / 2) * se,
+    pi_hi = pi_est + qnorm(1 - (1 - 0.99) / 2) * se
+  )
 ```
 
 **Observations**:
 
-- Does your intervals include the true value of $\pi$?
-  - (Bootstrap CI: yes or no?)
-  - (CLT CI: yes or no?)
-- How closely do your bootstrap CI and CLT CI agree?
-  - (Your answer here)
-- Comment on the width of your CI(s). Would your estimate of $\pi$ be good enough for roughly estimating an area (e.g., to buy enough paint for an art project)? Would your estimate of $\pi$ be good enough for precisely calculating a trajectory (e.g., sending a rocket into orbit)?
-  - (Good enough as a rough estimate?)
-  - (Good enough as a precise estimate?)
-- What would be a *valid* way to make your CI more narrow?
-  - (Your answer here)
+-   Does your intervals include the true value of $\pi$?
+    -   (Bootstrap CI: yes or no?) Yes
+    -   (CLT CI: yes or no?) Yes
+-   How closely do your bootstrap CI and CLT CI agree?
+    -   The CLT has a larger standard error compared to the bootstrap. However they do center around a similar average
+-   Comment on the width of your CI(s). Would your estimate of $\pi$ be good enough for roughly estimating an area (e.g., to buy enough paint for an art project)? Would your estimate of $\pi$ be good enough for precisely calculating a trajectory (e.g., sending a rocket into orbit)?
+    -   Yes, absolutely for a rough estimate.
+    -   Yes perhaps for a precise estimate, however ideally only if the sample size is incredibly high.
+-   What would be a *valid* way to make your CI more narrow?
+    -   Increasing the sample size
 
 # References
+
 <!-- -------------------------------------------------- -->
 
 [1] Dumoulin and Thouin, "A Ballistic Monte Carlo Approximation of Pi" (2014) ArXiv, [link](https://arxiv.org/abs/1404.1499)
