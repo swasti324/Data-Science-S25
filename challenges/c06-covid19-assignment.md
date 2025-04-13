@@ -167,15 +167,15 @@ To check your results, this is Table `B01003`.
 ## TASK: Load the census bureau data with the following tibble name.
 
 path <- "C:/Users/sjain1/OneDrive - Olin College of Engineering/Documents/2024-2025/Data Science/Data-Science-S25/challenges/data/ACSDT5Y2018.B01003-Data.csv"
-df_pop <- read.csv(path) %>% 
+df_pop <- read.csv(path) %>%
   rename(
     id = GEO_ID,
     `Geographic Area Name` = NAME,
     `Estimate!!Total` = B01003_001E,
     `Margin of Error!!Total` = B01003_001M
   ) %>%
-    select(id, `Geographic Area Name`, `Estimate!!Total`, `Margin of Error!!Total`) %>% 
-      slice(-1)
+  select(id, `Geographic Area Name`, `Estimate!!Total`, `Margin of Error!!Total`) %>%
+  slice(-1)
 
 glimpse(df_pop)
 ```
@@ -209,7 +209,7 @@ The New York Times is publishing up-to-date data on COVID-19 on
 
 ``` r
 ## TASK: Find the URL for the NYT covid-19 county-level data
-url_counties <- "https://raw.githubusercontent.com/nytimes/covid-19-data/refs/heads/master/us-counties-2020.csv"
+url_counties <- "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"
 ```
 
 Once you have the url, the following code will download a local copy of
@@ -222,15 +222,15 @@ filename_nyt <- "./data/nyt_counties.csv"
 
 ## Download the data locally
 curl::curl_download(
-        url_counties,
-        destfile = filename_nyt
-      )
+  url_counties,
+  destfile = filename_nyt
+)
 
 ## Loads the downloaded csv
 df_covid <- read_csv(filename_nyt)
 ```
 
-    ## Rows: 884737 Columns: 6
+    ## Rows: 2502832 Columns: 6
     ## ── Column specification ────────────────────────────────────────────────────────
     ## Delimiter: ","
     ## chr  (3): county, state, fips
@@ -256,7 +256,7 @@ sources.
 
 ``` r
 ## NOTE: No need to change this; just execute
-df_pop %>% glimpse
+df_pop %>% glimpse()
 ```
 
     ## Rows: 3,220
@@ -267,10 +267,10 @@ df_pop %>% glimpse
     ## $ `Margin of Error!!Total` <chr> "*****", "*****", "*****", "*****", "*****", …
 
 ``` r
-df_covid %>% glimpse
+df_covid %>% glimpse()
 ```
 
-    ## Rows: 884,737
+    ## Rows: 2,502,832
     ## Columns: 6
     ## $ date   <date> 2020-01-21, 2020-01-22, 2020-01-23, 2020-01-24, 2020-01-24, 20…
     ## $ county <chr> "Snohomish", "Snohomish", "Snohomish", "Cook", "Snohomish", "Or…
@@ -298,10 +298,10 @@ Use the following test to check your answer.
 ## NOTE: No need to change this
 ## Check known county
 assertthat::assert_that(
-              (df_q3 %>%
-              filter(str_detect(`Geographic Area Name`, "Autauga County")) %>%
-              pull(fips)) == "01001"
-            )
+  (df_q3 %>%
+    filter(str_detect(`Geographic Area Name`, "Autauga County")) %>%
+    pull(fips)) == "01001"
+)
 ```
 
     ## [1] TRUE
@@ -375,7 +375,23 @@ df_data <-
     deaths,
     population = `Estimate!!Total`
   )
+df_data
 ```
+
+    ## # A tibble: 2,502,832 × 7
+    ##    date       county      state      fips  cases deaths population
+    ##    <date>     <chr>       <chr>      <chr> <dbl>  <dbl> <chr>     
+    ##  1 2020-01-21 Snohomish   Washington 53061     1      0 786620    
+    ##  2 2020-01-22 Snohomish   Washington 53061     1      0 786620    
+    ##  3 2020-01-23 Snohomish   Washington 53061     1      0 786620    
+    ##  4 2020-01-24 Cook        Illinois   17031     1      0 5223719   
+    ##  5 2020-01-24 Snohomish   Washington 53061     1      0 786620    
+    ##  6 2020-01-25 Orange      California 06059     1      0 3164182   
+    ##  7 2020-01-25 Cook        Illinois   17031     1      0 5223719   
+    ##  8 2020-01-25 Snohomish   Washington 53061     1      0 786620    
+    ##  9 2020-01-26 Maricopa    Arizona    04013     1      0 4253913   
+    ## 10 2020-01-26 Los Angeles California 06037     1      0 10098052  
+    ## # ℹ 2,502,822 more rows
 
 # Analyze
 
@@ -396,7 +412,7 @@ data.
 ## TASK: Normalize cases and deaths
 df_normalized <- df_data %>%
   mutate(
-    population = as.numeric(population),  
+    population = as.numeric(population),
     cases_per100k = (cases / population) * 100000,
     deaths_per100k = (deaths / population) * 100000
   )
@@ -470,26 +486,26 @@ assertthat::assert_that(is.numeric(df_normalized$deaths_per100k))
 ``` r
 ## Check that normalization is correct
 assertthat::assert_that(
-              abs(df_normalized %>%
-               filter(
-                 str_detect(county, "Snohomish"),
-                 date == "2020-01-21"
-               ) %>%
-              pull(cases_per100k) - 0.127) < 1e-3
-            )
+  abs(df_normalized %>%
+    filter(
+      str_detect(county, "Snohomish"),
+      date == "2020-01-21"
+    ) %>%
+    pull(cases_per100k) - 0.127) < 1e-3
+)
 ```
 
     ## [1] TRUE
 
 ``` r
 assertthat::assert_that(
-              abs(df_normalized %>%
-               filter(
-                 str_detect(county, "Snohomish"),
-                 date == "2020-01-21"
-               ) %>%
-              pull(deaths_per100k) - 0) < 1e-3
-            )
+  abs(df_normalized %>%
+    filter(
+      str_detect(county, "Snohomish"),
+      date == "2020-01-21"
+    ) %>%
+    pull(deaths_per100k) - 0) < 1e-3
+)
 ```
 
     ## [1] TRUE
@@ -514,12 +530,30 @@ include in your summaries,* and justify why!
 
 ``` r
 ## TASK: Compute mean and sd for cases_per100k and deaths_per100k
+# df_normalized
+
+df_geda <- df_normalized %>%
+  filter(date == max(date)) %>%
+  summarize(mean_cases = mean(cases_per100k, na.rm = TRUE), sd_cases = sd(cases_per100k, na.rm = TRUE), mean_deaths = mean(deaths_per100k, na.rm = TRUE), sd_deaths = sd(deaths_per100k, na.rm = TRUE))
+
+
+
+df_geda
 ```
 
-- Which rows did you pick?
-  - (Your response here)
-- Why?
-  - (Your response here)
+    ## # A tibble: 1 × 4
+    ##   mean_cases sd_cases mean_deaths sd_deaths
+    ##        <dbl>    <dbl>       <dbl>     <dbl>
+    ## 1     24774.    6233.        375.      160.
+
+  
+  
+
+- Which rows did you pick? Why?
+
+  - I chose the maximum date as that would be the most recent data. The
+    data is also cumulative so it will also reflect the data of the past
+    as well.
 
 ### **q7** Find and compare the top 10
 
@@ -531,14 +565,84 @@ you found in q6. Note any observations.
 ``` r
 ## TASK: Find the top 10 max cases_per100k counties; report populations as well
 
-## TASK: Find the top 10 deaths_per100k counties; report populations as well
+df_max_cases <- df_normalized %>%
+  group_by(county, fips, state) %>%
+  summarize(
+    cases_per100k = max(cases_per100k),
+    population = max(population)
+  ) %>%
+  arrange(desc(cases_per100k)) %>%
+  head(10)
 ```
+
+    ## `summarise()` has grouped output by 'county', 'fips'. You can override using
+    ## the `.groups` argument.
+
+``` r
+## TASK: Find the top 10 deaths_per100k counties; report populations as well
+
+df_max_deaths <- df_normalized %>%
+  group_by(county, fips, state) %>%
+  summarize(
+    deaths_per100k = max(deaths_per100k),
+    population = max(population)
+  ) %>%
+  arrange(desc(deaths_per100k)) %>%
+  head(10)
+```
+
+    ## `summarise()` has grouped output by 'county', 'fips'. You can override using
+    ## the `.groups` argument.
+
+``` r
+df_max_cases
+```
+
+    ## # A tibble: 10 × 5
+    ## # Groups:   county, fips [10]
+    ##    county                   fips  state        cases_per100k population
+    ##    <chr>                    <chr> <chr>                <dbl>      <dbl>
+    ##  1 Loving                   48301 Texas              192157.        102
+    ##  2 Chattahoochee            13053 Georgia             69527.      10767
+    ##  3 Nome Census Area         02180 Alaska              62922.       9925
+    ##  4 Northwest Arctic Borough 02188 Alaska              62542.       7734
+    ##  5 Crowley                  08025 Colorado            59449.       5630
+    ##  6 Bethel Census Area       02050 Alaska              57439.      18040
+    ##  7 Dewey                    46041 South Dakota        54317.       5779
+    ##  8 Dimmit                   48127 Texas               54019.      10663
+    ##  9 Jim Hogg                 48247 Texas               50133.       5282
+    ## 10 Kusilvak Census Area     02158 Alaska              49817.       8198
+
+``` r
+df_max_deaths
+```
+
+    ## # A tibble: 10 × 5
+    ## # Groups:   county, fips [10]
+    ##    county            fips  state        deaths_per100k population
+    ##    <chr>             <chr> <chr>                 <dbl>      <dbl>
+    ##  1 McMullen          48311 Texas                 1360.        662
+    ##  2 Galax city        51640 Virginia              1175.       6638
+    ##  3 Motley            48345 Texas                 1125.       1156
+    ##  4 Hancock           13141 Georgia               1054.       8535
+    ##  5 Emporia city      51595 Virginia              1022.       5381
+    ##  6 Towns             13281 Georgia               1016.      11417
+    ##  7 Jerauld           46073 South Dakota           986.       2029
+    ##  8 Loving            48301 Texas                  980.        102
+    ##  9 Robertson         21201 Kentucky               980.       2143
+    ## 10 Martinsville city 51690 Virginia               946.      13101
 
 **Observations**:
 
 - (Note your observations here!)
+  - The population of Loving Texas is very small with 102 people and the
+    cases per 100k is nearly 7.75 times higher than the mean.
+
+    The population of these counties are relatively small. The highest
+    being 18,040 people in Bethel Census Area Alaska
 - When did these “largest values” occur?
-  - (Your response here)
+  - Since the data is cumulative we can assume these largest values
+    occured on or around the max date
 
 ## Self-directed EDA
 
@@ -560,6 +664,41 @@ you found in q6. Note any observations.
 
 **DO YOUR OWN ANALYSIS HERE**
 
+``` r
+df_normalized %>%
+  filter(state == "California") %>%
+  group_by(county) %>%
+  filter(population > 1000000) %>%
+  ggplot() +
+  geom_line(aes(date, cases, color = county))
+```
+
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+Description of graph:
+
+- I chose to look at the top populated counties in California (with a
+  population larger than 1 mil people) since I am from California and I
+  might be able to understand/connect the geographical and historical
+  insights for the trends seen in the cumulative cases over time
+
+Observations:
+
+- each county follows a similar trend with Los Angeles showing the most
+  notable increases in cases due to its enormous population size.
+
+- Taking Los Angeles as an example there was an enormous spike in cases
+  at the tail end of 2020 and the beginning of 2021
+
+- This similar spike is seen again in at the tail end of 2021 and
+  beginning of 2022
+
+- My hypothesis is that this surge was due to large social gatherings
+  during the holiday season.
+
+- There is a smaller spike around October which is peculiar as it is not
+  a typical vacationing period. This is something to look into further.
+
 ### Aside: Some visualization tricks
 
 <!-- ------------------------- -->
@@ -575,7 +714,6 @@ Massachusetts.
 #     state == "Massachusetts", # Focus on Mass only
 #     !is.na(fips), # fct_reorder2 can choke with missing data
 #   ) %>%
-# 
 #   ggplot(
 #     aes(date, cases_per100k, color = fct_reorder2(county, date, cases_per100k))
 #   ) +
