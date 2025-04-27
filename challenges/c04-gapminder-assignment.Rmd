@@ -1,7 +1,7 @@
 ---
 title: "Gapminder"
-author: "(Your name here)"
-date: 2020-
+author: "Swasti Jain"
+date: 2025-4-26
 output:
   github_document:
     toc: true
@@ -12,17 +12,20 @@ prerequisites:
 *Purpose*: Learning to do EDA well takes practice! In this challenge you'll further practice EDA by first completing a guided exploration, then by conducting your own investigation. This challenge will also give you a chance to use the wide variety of visual tools we've been learning.
 
 <!-- include-rubric -->
+
 # Grading Rubric
+
 <!-- -------------------------------------------------- -->
 
 Unlike exercises, **challenges will be graded**. The following rubrics define how you will be graded, both on an individual and team basis.
 
 ## Individual
+
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|----------|----------------|--------------|
-| Effort | Some task __q__'s left unattempted | All task __q__'s attempted |
+|------------------------|------------------------|------------------------|
+| Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
 | Assessed | Observations include claims not supported by the data, or reflect a level of certainty not warranted by the data | Observations are appropriately qualified by the quality & relevance of the data and (in)conclusiveness of the support |
@@ -30,40 +33,42 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 | Code Styled | Violations of the [style guide](https://style.tidyverse.org/) hinder readability | Code sufficiently close to the [style guide](https://style.tidyverse.org/) |
 
 ## Submission
+
 <!-- ------------------------- -->
 
 Make sure to commit both the challenge report (`report.md` file) and supporting files (`report_files/` folder) when you are done! Then submit a link to Canvas. **Your Challenge submission is not complete without all files uploaded to GitHub.**
 
-
 ```{r setup}
 library(tidyverse)
 library(gapminder)
-
 ```
 
-*Background*: [Gapminder](https://www.gapminder.org/about-gapminder/) is an
-independent organization that seeks to educate people about the state of the
-world. They seek to counteract the worldview constructed by a hype-driven media
-cycle, and promote a "fact-based worldview" by focusing on data. The dataset
-we'll study in this challenge is from Gapminder.
+*Background*: [Gapminder](https://www.gapminder.org/about-gapminder/) is an independent organization that seeks to educate people about the state of the world. They seek to counteract the worldview constructed by a hype-driven media cycle, and promote a "fact-based worldview" by focusing on data. The dataset we'll study in this challenge is from Gapminder.
 
 # Guided EDA
+
 <!-- -------------------------------------------------- -->
 
 First, we'll go through a round of *guided EDA*. Try to pay attention to the high-level process we're going through---after this guided round you'll be responsible for doing another cycle of EDA on your own!
 
-### __q0__ Perform your "first checks" on the dataset. What variables are in this
-dataset?
+### **q0** Perform your "first checks" on the dataset. What variables are in this dataset?
 
 ```{r q0-task}
 ## TASK: Do your "first checks" here!
+glimpse(gapminder_unfiltered)
 ```
 
 **Observations**:
 
-- Write all variable names here
+-   Write all variable names here
+-   country: fct, categorical variable
+-   continent: fct, categorical variable
+-   year: int
+-   lifeExp: dbl, double
+-   pop: int
+-   gdpPercap: dbl, double
 
-### __q1__ Determine the most and least recent years in the `gapminder` dataset.
+### **q1** Determine the most and least recent years in the `gapminder` dataset.
 
 *Hint*: Use the `pull()` function to get a vector out of a tibble. (Rather than the `$` notation of base R.)
 
@@ -71,6 +76,15 @@ dataset?
 ## TASK: Find the largest and smallest values of `year` in `gapminder`
 year_max <- NA_real_
 year_min <- NA_real_
+
+
+year_min <- gapminder %>%
+  pull(year) %>%
+  min()
+
+year_max <- gapminder %>%
+  pull(year) %>%
+  max()
 ```
 
 Use the following test to check your work.
@@ -90,32 +104,67 @@ if (is_tibble(year_max)) {
 print("Nice!")
 ```
 
-### __q2__ Filter on years matching `year_min`, and make a plot of the GDP per capita against continent. Choose an appropriate `geom_` to visualize the data. What observations can you make?
+### **q2** Filter on years matching `year_min`, and make a plot of the GDP per capita against continent. Choose an appropriate `geom_` to visualize the data. What observations can you make?
 
 You may encounter difficulties in visualizing these data; if so document your challenges and attempt to produce the most informative visual you can.
 
 ```{r q2-task}
 ## TASK: Create a visual of gdpPercap vs continent
+gapminder %>%
+  filter(year == year_min) %>%
+  ggplot(aes(continent, gdpPercap)) +
+  scale_y_log10() +
+  geom_boxplot()
 ```
 
 **Observations**:
 
-- Write your observations here
+-   There is one country that is a significant outlier in Asia
+-   Oceania likely has very little data which is why the box plot has very little variation.
+-   Europe seems to have the most variation since it has the largest difference in its lower and upper quartile (when plotted on a linear scale)
 
 **Difficulties & Approaches**:
 
-- Write your challenges and your approach to solving them
+-   On my first pass of representing this data I used a linear y scale. This contributed to a misunderstanding that the median gdp for each continent was relatively similar.
+-   Using a log scale compresses the distribution making large and small values easier to compare and analyze.
 
-### __q3__ You should have found *at least* three outliers in q2 (but possibly many more!). Identify those outliers (figure out which countries they are).
+### **q3** You should have found *at least* three outliers in q2 (but possibly many more!). Identify those outliers (figure out which countries they are).
 
 ```{r q3-task}
 ## TASK: Identify the outliers from q2
+
+gapminder %>%
+  filter(year == year_min, continent == "Asia", gdpPercap >= 90000) %>%
+  ggplot(aes(continent, gdpPercap, color = country)) +
+  geom_point()
+# Kuwait has the highest outlier??
+
+
+gapminder %>%
+  filter(year == year_min, continent == "Americas", gdpPercap >= 10000) %>%
+  ggplot(aes(continent, gdpPercap, color = country)) +
+  geom_point()
+
+
+gapminder %>%
+  filter(year == year_min, continent == "Europe", gdpPercap >= 14000) %>%
+  ggplot(aes(continent, gdpPercap, color = country)) +
+  geom_point()
+
+
+gapminder %>%
+  filter(year == year_min, continent == "Africa", gdpPercap >= 4000) %>%
+  ggplot(aes(continent, gdpPercap, color = country)) +
+  geom_point()
 ```
 
 **Observations**:
 
-- Identify the outlier countries from q2
-  - (Your response here)
+-   Identify the outlier countries from q2
+    -   Asia –\> Kuwait
+    -   Americas –\> United States
+    -   Europe –\> Switzerland
+    -   Africa –\> South Africa
 
 *Hint*: For the next task, it's helpful to know a ggplot trick we'll learn in an upcoming exercise: You can use the `data` argument inside any `geom_*` to modify the data that will be plotted *by that geom only*. For instance, you can use this trick to filter a set of points to label:
 
@@ -123,8 +172,8 @@ You may encounter difficulties in visualizing these data; if so document your ch
 ## NOTE: No need to edit, use ideas from this in q4 below
 gapminder %>%
   filter(year == max(year)) %>%
-
   ggplot(aes(continent, lifeExp)) +
+  scale_y_log10() +
   geom_boxplot() +
   geom_point(
     data = . %>% filter(country %in% c("United Kingdom", "Japan", "Zambia")),
@@ -133,41 +182,81 @@ gapminder %>%
   )
 ```
 
-### __q4__ Create a plot similar to yours from q2 studying both `year_min` and `year_max`. Find a way to highlight the outliers from q3 on your plot *in a way that lets you identify which country is which*. Compare the patterns between `year_min` and `year_max`.
+### **q4** Create a plot similar to yours from q2 studying both `year_min` and `year_max`. Find a way to highlight the outliers from q3 on your plot *in a way that lets you identify which country is which*. Compare the patterns between `year_min` and `year_max`.
 
 *Hint*: We've learned a lot of different ways to show multiple variables; think about using different aesthetics or facets.
 
 ```{r q4-task}
 ## TASK: Create a visual of gdpPercap vs continent
+gapminder %>%
+  filter(year %in% c(year_max,year_min)) %>%
+  mutate(year_label = ifelse(year == year_min, "Year Min", "Year Max")) %>%
+  ggplot(aes(continent, gdpPercap)) +
+  scale_y_log10() +
+  geom_boxplot() +
+  geom_point(
+    data = . %>% filter(country %in% c("United States", "Kuwait", "Switzerland", "South Africa")),
+    mapping = aes(color = country),
+    size = 2
+  )+
+  facet_wrap(~year_label)
 ```
 
 **Observations**:
 
-- Write your observations here
+-   It is important to dig deeper into the story of Kuwait to explain how its GDP, defined by the following equation, is so significantly high that the highest outliers for every other major continent are incomparable.
+-   GDP = Consumption + Investment + Government Spending + Net Exports 
+-   Due to Kuwait's enormous oil reserves and small population, its GDP per capita is a surmountable ratio.
 
 # Your Own EDA
+
 <!-- -------------------------------------------------- -->
 
 Now it's your turn! We just went through guided EDA considering the GDP per capita at two time points. You can continue looking at outliers, consider different years, repeat the exercise with `lifeExp`, consider the relationship between variables, or something else entirely.
 
-### __q5__ Create *at least* three new figures below. With each figure, try to pose new questions about the data.
+### **q5** Create *at least* three new figures below. With each figure, try to pose new questions about the data.
 
 ```{r q5-task1}
 ## TASK: Your first graph
+gapminder %>%
+  ggplot(aes(x = continent, y = lifeExp)) +
+  geom_boxplot()
 ```
 
-- (Your notes and observations here)
+-   This shows the box plot for the life expectancy over the whole course of the dataset.
+-   My guiding question is to know what the general trend of life expectancy was over the course of the recorded times
 
 ```{r q5-task2}
 ## TASK: Your second graph
+
+gapminder %>%
+  ggplot(aes(year, lifeExp, color = continent)) +
+  geom_point(position = "jitter")
 ```
 
-- (Your notes and observations here)
+-   This shows the distribution over the years a bit better in my opinion
+-   We see that theres a distinction between the general clump of Europe and Oceania versus Africa. However overall they seem to follow a similar upwards trend.
 
 ```{r q5-task3}
 ## TASK: Your third graph
+gapminder %>%
+  group_by(year, continent) %>%
+  summarise(
+    mean_lifeExp = mean(lifeExp),
+    sd_lifeExp = sd(lifeExp),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = year, y = mean_lifeExp, color = continent, fill = continent)) +
+  geom_ribbon(aes(
+    ymin = mean_lifeExp - sd_lifeExp,
+    ymax = mean_lifeExp + sd_lifeExp
+  ),
+    alpha = 0.2, linetype = "blank"
+  ) +
+  geom_line(size = 1)
+
 ```
 
-- (Your notes and observations here)
-
-
+-   This graph plots the life expectancy over the years as well as a ribbon of the standard deveiation
+-   While all the countries seem to follow a similar slope of improvement for life expectancy, Africa seems to stagnate in the mid 1980s.
+-   From a quick google search, many articles point to the spread of HIV/AIDs epidemic to this trend however further research is necessary.

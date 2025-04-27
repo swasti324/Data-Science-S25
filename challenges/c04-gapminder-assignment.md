@@ -1,7 +1,7 @@
 Gapminder
 ================
-(Your name here)
-2020-
+Swasti Jain
+2025-4-26
 
 - [Grading Rubric](#grading-rubric)
   - [Individual](#individual)
@@ -138,12 +138,12 @@ year_max <- NA_real_
 year_min <- NA_real_
 
 
-year_min <- gapminder %>% 
-  pull(year) %>% 
+year_min <- gapminder %>%
+  pull(year) %>%
   min()
 
-year_max<- gapminder %>% 
-  pull(year) %>% 
+year_max <- gapminder %>%
+  pull(year) %>%
   max()
 ```
 
@@ -193,9 +193,10 @@ can.
 
 ``` r
 ## TASK: Create a visual of gdpPercap vs continent
-gapminder %>% 
-  filter(year == year_min) %>% 
-  ggplot(aes(continent, gdpPercap))+
+gapminder %>%
+  filter(year == year_min) %>%
+  ggplot(aes(continent, gdpPercap)) +
+  scale_y_log10() +
   geom_boxplot()
 ```
 
@@ -207,21 +208,25 @@ gapminder %>%
 - Oceania likely has very little data which is why the box plot has very
   little variation.
 - Europe seems to have the most variation since it has the largest
-  difference in its lower and upper quartile
+  difference in its lower and upper quartile (when plotted on a linear
+  scale)
 
 **Difficulties & Approaches**:
 
-- So much so that it makes all the relative median gdp for the other
-  continents seem more similar than they actually are
+- On my first pass of representing this data I used a linear y scale.
+  This contributed to a misunderstanding that the median gdp for each
+  continent was relatively similar.
+- Using a log scale compresses the distribution making large and small
+  values easier to compare and analyze.
 
 ### **q3** You should have found *at least* three outliers in q2 (but possibly many more!). Identify those outliers (figure out which countries they are).
 
 ``` r
 ## TASK: Identify the outliers from q2
 
-gapminder %>% 
-  filter(year == year_min, continent == "Asia", gdpPercap >= 90000) %>% 
-  ggplot(aes(continent, gdpPercap, color = country))+
+gapminder %>%
+  filter(year == year_min, continent == "Asia", gdpPercap >= 90000) %>%
+  ggplot(aes(continent, gdpPercap, color = country)) +
   geom_point()
 ```
 
@@ -231,27 +236,27 @@ gapminder %>%
 # Kuwait has the highest outlier??
 
 
-gapminder %>% 
-  filter(year == year_min, continent == "Americas", gdpPercap >= 10000) %>% 
-  ggplot(aes(continent, gdpPercap, color = country))+
+gapminder %>%
+  filter(year == year_min, continent == "Americas", gdpPercap >= 10000) %>%
+  ggplot(aes(continent, gdpPercap, color = country)) +
   geom_point()
 ```
 
 ![](c04-gapminder-assignment_files/figure-gfm/q3-task-2.png)<!-- -->
 
 ``` r
-gapminder %>% 
-  filter(year == year_min, continent == "Europe", gdpPercap >= 14000) %>% 
-  ggplot(aes(continent, gdpPercap, color = country))+
+gapminder %>%
+  filter(year == year_min, continent == "Europe", gdpPercap >= 14000) %>%
+  ggplot(aes(continent, gdpPercap, color = country)) +
   geom_point()
 ```
 
 ![](c04-gapminder-assignment_files/figure-gfm/q3-task-3.png)<!-- -->
 
 ``` r
-gapminder %>% 
-  filter(year == year_min, continent == "Africa", gdpPercap >= 4000) %>% 
-  ggplot(aes(continent, gdpPercap, color = country))+
+gapminder %>%
+  filter(year == year_min, continent == "Africa", gdpPercap >= 4000) %>%
+  ggplot(aes(continent, gdpPercap, color = country)) +
   geom_point()
 ```
 
@@ -275,8 +280,8 @@ label:
 ## NOTE: No need to edit, use ideas from this in q4 below
 gapminder %>%
   filter(year == max(year)) %>%
-
   ggplot(aes(continent, lifeExp)) +
+  scale_y_log10() +
   geom_boxplot() +
   geom_point(
     data = . %>% filter(country %in% c("United Kingdom", "Japan", "Zambia")),
@@ -295,15 +300,17 @@ variables; think about using different aesthetics or facets.
 ``` r
 ## TASK: Create a visual of gdpPercap vs continent
 gapminder %>%
-  filter(year == year_min) %>%
-
+  filter(year %in% c(year_max,year_min)) %>%
+  mutate(year_label = ifelse(year == year_min, "Year Min", "Year Max")) %>%
   ggplot(aes(continent, gdpPercap)) +
+  scale_y_log10() +
   geom_boxplot() +
   geom_point(
     data = . %>% filter(country %in% c("United States", "Kuwait", "Switzerland", "South Africa")),
     mapping = aes(color = country),
     size = 2
-  )
+  )+
+  facet_wrap(~year_label)
 ```
 
 ![](c04-gapminder-assignment_files/figure-gfm/q4-task-1.png)<!-- -->
@@ -333,7 +340,7 @@ the relationship between variables, or something else entirely.
 ## TASK: Your first graph
 gapminder %>%
   ggplot(aes(x = continent, y = lifeExp)) +
-  geom_boxplot() 
+  geom_boxplot()
 ```
 
 ![](c04-gapminder-assignment_files/figure-gfm/q5-task1-1.png)<!-- -->
@@ -346,8 +353,8 @@ gapminder %>%
 ``` r
 ## TASK: Your second graph
 
-gapminder %>% 
-  ggplot(aes(year, lifeExp, color = continent))+
+gapminder %>%
+  ggplot(aes(year, lifeExp, color = continent)) +
   geom_point(position = "jitter")
 ```
 
@@ -360,20 +367,21 @@ gapminder %>%
 
 ``` r
 ## TASK: Your third graph
-
 gapminder %>%
   group_by(year, continent) %>%
   summarise(
     mean_lifeExp = mean(lifeExp),
     sd_lifeExp = sd(lifeExp),
-    n = n(),
-    se_lifeExp = sd_lifeExp / sqrt(n), 
     .groups = "drop"
   ) %>%
   ggplot(aes(x = year, y = mean_lifeExp, color = continent, fill = continent)) +
-  geom_ribbon(aes(ymin = mean_lifeExp - 1.96 * se_lifeExp, ymax = mean_lifeExp + 1.96 * se_lifeExp), 
-              alpha = 0.2, linetype = "blank") +  
-  geom_line(size = 1) 
+  geom_ribbon(aes(
+    ymin = mean_lifeExp - sd_lifeExp,
+    ymax = mean_lifeExp + sd_lifeExp
+  ),
+    alpha = 0.2, linetype = "blank"
+  ) +
+  geom_line(size = 1)
 ```
 
     ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
@@ -385,8 +393,7 @@ gapminder %>%
 ![](c04-gapminder-assignment_files/figure-gfm/q5-task3-1.png)<!-- -->
 
 - This graph plots the life expectancy over the years as well as a
-  ribbon of the 95% confidence interval to better represent the
-  variation as well
+  ribbon of the standard deveiation
 - While all the countries seem to follow a similar slope of improvement
   for life expectancy, Africa seems to stagnate in the mid 1980s.
 - From a quick google search, many articles point to the spread of
