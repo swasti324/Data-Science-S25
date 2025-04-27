@@ -1,7 +1,7 @@
 Aluminum Data
 ================
-(Your name here)
-2020-
+Swasti Jain
+2025/4/26
 
 - [Grading Rubric](#grading-rubric)
   - [Individual](#individual)
@@ -150,16 +150,16 @@ value for `names_to`.
 
 ``` r
 ## TASK: Tidy `df_stang`
-df_stang_long <-df_stang %>% 
+df_stang_long <- df_stang %>%
   pivot_longer(
-    cols= starts_with("E_") | starts_with("nu_"),
+    cols = starts_with("E_") | starts_with("nu_"),
     names_to = c(".value", "angle"),
     names_sep = "_"
-  ) %>% 
+  ) %>%
   filter(
-    E >=0
-  ) %>% 
-    mutate(angle = as.integer(angle))
+    E >= 0
+  ) %>%
+  mutate(angle = as.integer(angle))
 
 
 
@@ -187,11 +187,11 @@ Use the following tests to check your work.
 ## NOTE: No need to change this
 ## Names
 assertthat::assert_that(
-              setequal(
-                df_stang_long %>% names,
-                c("thick", "alloy", "angle", "E", "nu")
-              )
-            )
+  setequal(
+    df_stang_long %>% names(),
+    c("thick", "alloy", "angle", "E", "nu")
+  )
+)
 ```
 
     ## [1] TRUE
@@ -206,8 +206,8 @@ assertthat::assert_that(all(dim(df_stang_long) == c(26, 5)))
 ``` r
 ## Type
 assertthat::assert_that(
-              (df_stang_long %>% pull(angle) %>% typeof()) == "integer"
-            )
+  (df_stang_long %>% pull(angle) %>% typeof()) == "integer"
+)
 ```
 
     ## [1] TRUE
@@ -240,6 +240,41 @@ glimpse(df_stang_long)
     ## $ E     <dbl> 10600, 10700, 10500, 10600, 10500, 10700, 10400, 10400, 10300, 1…
     ## $ nu    <dbl> 0.321, 0.329, 0.310, 0.323, 0.331, 0.323, 0.329, 0.318, 0.322, 0…
 
+``` r
+df_stang_long %>%
+  distinct(alloy)
+```
+
+    ## # A tibble: 1 × 1
+    ##   alloy  
+    ##   <chr>  
+    ## 1 al_24st
+
+``` r
+df_stang_long %>%
+  distinct(angle)
+```
+
+    ## # A tibble: 3 × 1
+    ##   angle
+    ##   <int>
+    ## 1     0
+    ## 2    45
+    ## 3    90
+
+``` r
+df_stang_long %>%
+  distinct(thick)
+```
+
+    ## # A tibble: 4 × 1
+    ##   thick
+    ##   <dbl>
+    ## 1 0.022
+    ## 2 0.032
+    ## 3 0.064
+    ## 4 0.081
+
 **Observations**:
 
 - Is there “one true value” for the material properties of Aluminum?
@@ -263,7 +298,7 @@ glimpse(df_stang_long)
 ``` r
 ## TASK: Investigate your question from q1 here
 
-df_stang_long %>% 
+df_stang_long %>%
   ggplot(aes(x = angle, y = E, color = thick)) +
   geom_point() +
   ylim(9500, NA)
@@ -296,7 +331,6 @@ Is this evidence *conclusive* one way or another? Why or why not?
 ``` r
 ## NOTE: No need to change; run this chunk
 df_stang_long %>%
-
   ggplot(aes(nu, E, color = as_factor(thick))) +
   geom_point(size = 3) +
   theme_minimal()

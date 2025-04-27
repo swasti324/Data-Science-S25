@@ -1,7 +1,7 @@
 ---
 title: "Aluminum Data"
-author: "(Your name here)"
-date: 2020-
+author: "Swasti Jain"
+date: 2025/4/26
 output:
   github_document:
     toc: true
@@ -14,17 +14,20 @@ prerequisites:
 In this challenge, you will load a real dataset, wrangle it into tidy form, and perform EDA to learn more about the data.
 
 <!-- include-rubric -->
+
 # Grading Rubric
+
 <!-- -------------------------------------------------- -->
 
 Unlike exercises, **challenges will be graded**. The following rubrics define how you will be graded, both on an individual and team basis.
 
 ## Individual
+
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|----------|----------------|--------------|
-| Effort | Some task __q__'s left unattempted | All task __q__'s attempted |
+|----|----|----|
+| Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
 | Assessed | Observations include claims not supported by the data, or reflect a level of certainty not warranted by the data | Observations are appropriately qualified by the quality & relevance of the data and (in)conclusiveness of the support |
@@ -32,10 +35,10 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 | Code Styled | Violations of the [style guide](https://style.tidyverse.org/) hinder readability | Code sufficiently close to the [style guide](https://style.tidyverse.org/) |
 
 ## Submission
+
 <!-- ------------------------- -->
 
 Make sure to commit both the challenge report (`report.md` file) and supporting files (`report_files/` folder) when you are done! Then submit a link to Canvas. **Your Challenge submission is not complete without all files uploaded to GitHub.**
-
 
 ```{r setup}
 library(tidyverse)
@@ -44,6 +47,7 @@ library(tidyverse)
 *Background*: In 1946, scientists at the Bureau of Standards tested a number of Aluminum plates to determine their [elasticity](https://en.wikipedia.org/wiki/Elastic_modulus) and [Poisson's ratio](https://en.wikipedia.org/wiki/Poisson%27s_ratio). These are key quantities used in the design of structural members, such as aircraft skin under [buckling loads](https://en.wikipedia.org/wiki/Buckling). These scientists tested plats of various thicknesses, and at different angles with respect to the [rolling](https://en.wikipedia.org/wiki/Rolling_(metalworking)) direction.
 
 # Loading and Wrangle
+
 <!-- -------------------------------------------------- -->
 
 The `readr` package in the Tidyverse contains functions to load data form many sources. The `read_csv()` function will help us load the data for this challenge.
@@ -60,14 +64,24 @@ df_stang
 
 Note that these data are not tidy! The data in this form are convenient for reporting in a table, but are not ideal for analysis.
 
-### __q1__ Tidy `df_stang` to produce `df_stang_long`. You should have column names `thick, alloy, angle, E, nu`. Make sure the `angle` variable is of correct type. Filter out any invalid values.
+### **q1** Tidy `df_stang` to produce `df_stang_long`. You should have column names `thick, alloy, angle, E, nu`. Make sure the `angle` variable is of correct type. Filter out any invalid values.
 
 *Hint*: You can reshape in one `pivot` using the `".value"` special value for `names_to`.
 
 ```{r q1-task}
 ## TASK: Tidy `df_stang`
-df_stang_long <-
-  df_stang
+df_stang_long <- df_stang %>%
+  pivot_longer(
+    cols = starts_with("E_") | starts_with("nu_"),
+    names_to = c(".value", "angle"),
+    names_sep = "_"
+  ) %>%
+  filter(
+    E >= 0
+  ) %>%
+  mutate(angle = as.integer(angle))
+
+
 
 df_stang_long
 ```
@@ -78,59 +92,78 @@ Use the following tests to check your work.
 ## NOTE: No need to change this
 ## Names
 assertthat::assert_that(
-              setequal(
-                df_stang_long %>% names,
-                c("thick", "alloy", "angle", "E", "nu")
-              )
-            )
+  setequal(
+    df_stang_long %>% names(),
+    c("thick", "alloy", "angle", "E", "nu")
+  )
+)
 ## Dimensions
 assertthat::assert_that(all(dim(df_stang_long) == c(26, 5)))
 ## Type
 assertthat::assert_that(
-              (df_stang_long %>% pull(angle) %>% typeof()) == "integer"
-            )
+  (df_stang_long %>% pull(angle) %>% typeof()) == "integer"
+)
 
 print("Very good!")
 ```
 
 # EDA
+
 <!-- -------------------------------------------------- -->
 
 ## Initial checks
+
 <!-- ------------------------- -->
 
-### __q2__ Perform a basic EDA on the aluminum data *without visualization*. Use your analysis to answer the questions under *observations* below. In addition, add your own *specific* question that you'd like to answer about the data---you'll answer it below in q3.
+### **q2** Perform a basic EDA on the aluminum data *without visualization*. Use your analysis to answer the questions under *observations* below. In addition, add your own *specific* question that you'd like to answer about the data---you'll answer it below in q3.
 
 ```{r q2-task}
-##
+glimpse(df_stang_long)
+
+df_stang_long %>%
+  distinct(alloy)
+
+df_stang_long %>%
+  distinct(angle)
+
+df_stang_long %>%
+  distinct(thick)
 ```
 
 **Observations**:
 
-- Is there "one true value" for the material properties of Aluminum?
-  - (Your response here)
-- How many aluminum alloys are in this dataset? How do you know?
-  - (Your response here)
-- What angles were tested?
-  - (Your response here)
-- What thicknesses were tested?
-  - (Your response here)
-- (Write your own question here)
+-   Is there "one true value" for the material properties of Aluminum?
+    -   No, there is not one true value because metals have a lot of variables that dictate elasticity and strain. For example the nu values are all different values.
+-   How many aluminum alloys are in this dataset? How do you know?
+    -   There is only one, al_24st
+-   What angles were tested?
+    -   0 degrees, 45 degrees, 90 degrees
+-   What thicknesses were tested?
+    -   0.022, 0.032, 0.064, 0.081
+-   I wonder if there is a trend for the angle's effect on the elasticity.
 
 ## Visualize
+
 <!-- ------------------------- -->
 
-### __q3__ Create a visualization to investigate your question from q2 above. Can you find an answer to your question using the dataset? Would you need additional information to answer your question?
+### **q3** Create a visualization to investigate your question from q2 above. Can you find an answer to your question using the dataset? Would you need additional information to answer your question?
 
 ```{r q3-task}
 ## TASK: Investigate your question from q1 here
+
+df_stang_long %>%
+  ggplot(aes(x = angle, y = E, color = thick)) +
+  geom_point() +
+  ylim(9500, NA)
 ```
 
 **Observations**:
 
-- (Address your question from q1 here)
+-   The graph includes thickness as a color aspect to see if there was any pattern with that element as well
+-   With the limited data provided it does seem as though the higher thickness, regardless of angle, produces a lower elasticity. This does make sense from general principles of physics but further research is needed to confirm this.
+-   Especially since there is far more variation in the thickness distribution for the higher levels of elasticity
 
-### __q4__ Consider the following statement:
+### **q4** Consider the following statement:
 
 > "A material's property (or material property) is an intensive property of some material, i.e. a physical property that does not depend on the amount of the material."[2]
 
@@ -139,7 +172,6 @@ Note that the "amount of material" would vary with the thickness of a tested pla
 ```{r q4-vis}
 ## NOTE: No need to change; run this chunk
 df_stang_long %>%
-
   ggplot(aes(nu, E, color = as_factor(thick))) +
   geom_point(size = 3) +
   theme_minimal()
@@ -147,14 +179,16 @@ df_stang_long %>%
 
 **Observations**:
 
-- Does this graph support or contradict the claim above?
-  - (Your response here)
-- Is this evidence *conclusive* one way or another?
-  - (Your response here)
+-   Does this graph support or contradict the claim above?
+    -   It does not support the claim as there are visible clusters, showing that thickness does in fact play a role in determining the material's properties.
+-   Is this evidence *conclusive* one way or another?
+    -   No there is more variation for the lower thicknesses. Especially for 0.022 thickness, the values for nu are not consistent at all.
+    -   Additionally there is very little data to make a conclusive claim.
 
 # References
+
 <!-- -------------------------------------------------- -->
 
-[1] Stang, Greenspan, and Newman, "Poisson's ratio of some structural alloys for large strains" (1946) Journal of Research of the National Bureau of Standards, (pdf link)[https://nvlpubs.nist.gov/nistpubs/jres/37/jresv37n4p211_A1b.pdf]
+[1] Stang, Greenspan, and Newman, "Poisson's ratio of some structural alloys for large strains" (1946) Journal of Research of the National Bureau of Standards, (pdf link)[<https://nvlpubs.nist.gov/nistpubs/jres/37/jresv37n4p211_A1b.pdf>]
 
-[2] Wikipedia, *List of material properties*, accessed 2020-06-26, (link)[https://en.wikipedia.org/wiki/List_of_materials_properties]
+[2] Wikipedia, *List of material properties*, accessed 2020-06-26, (link)[<https://en.wikipedia.org/wiki/List_of_materials_properties>]
