@@ -197,9 +197,9 @@ print("Your assertions passed, but make sure they're checking the right thing!")
 *Observations*
 
 -   You chose a correct value of `stat(x, y)` when `x, y` is *outside* the circle. Why did you choose this value?
-    -   I chose (0.71, 0.71) as that is just right out of the bounds of the circle. I wanted to ensure that the function passed this edge case.
+    -   I chose 4 because as the stat function is written it will multiply the squared sum by 4 if it is less than or equal to 1. I knew given the inputs the squared sum would certainly be 1 and hence be multiplied by 4.
 -   You chose a correct value of `stat(x, y)` when `x, y` is *inside* the circle. Why did you choose this value?
-    -   I chose (1, 0) as I saw that as another edge case as it is right inside the bounds of the circle.
+    -   I chose 0 because I knew the stat function would produce a squared sum greater than 1. Meaning that the point was not part of the circle and therefore is a 0 value.
 
 ### **q3** Estimate $\pi$
 
@@ -286,14 +286,17 @@ Compute a bootstrap confidence interval for $\pi$ at the 95% confidence level (`
 
 ```{r}
 ## TASK: Compute a bootstrap confidence interval at the 95% level (alpha = 0.05)
+
+alpha <- 0.05
+
+
 df_q5 <-
   df_q4 %>%
   summarize(
+
     # TODO: Compute pi_lo and pi_up
-    pi_mean = mean(pi_est),
-    se = sd(pi_est) / sqrt(n),
-    pi_lo = pi_mean - 1.96 * se,
-    pi_up = pi_mean + 1.96 * se
+    pi_lo = quantile(pi_est, alpha / 2),
+    pi_up = quantile(pi_est, 1 - alpha / 2)
   )
 
 df_q5
@@ -324,10 +327,10 @@ df_q1 %>%
     -   (Bootstrap CI: yes or no?) Yes
     -   (CLT CI: yes or no?) Yes
 -   How closely do your bootstrap CI and CLT CI agree?
-    -   The CLT has a larger standard error compared to the bootstrap. However they do center around a similar average
+    -   The CLT and bootstrap center around a similar average
 -   Comment on the width of your CI(s). Would your estimate of $\pi$ be good enough for roughly estimating an area (e.g., to buy enough paint for an art project)? Would your estimate of $\pi$ be good enough for precisely calculating a trajectory (e.g., sending a rocket into orbit)?
     -   Yes, absolutely for a rough estimate.
-    -   Yes perhaps for a precise estimate, however ideally only if the sample size is incredibly high.
+    -   It would not be great for a precise estimate.
 -   What would be a *valid* way to make your CI more narrow?
     -   Increasing the sample size
 
