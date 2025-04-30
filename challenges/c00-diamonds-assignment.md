@@ -1,7 +1,7 @@
 Getting Started: Diamonds
 ================
 Swasti Jain
-2020-
+2025
 
 - [Grading Rubric](#grading-rubric)
   - [Individual](#individual)
@@ -98,13 +98,13 @@ document your observations.
 ``` r
 ## TASK: Plot `price` vs `carat` below
 
-diamonds %>% 
-  ggplot()+
+diamonds %>%
+  ggplot() +
   geom_point(
-    mapping = aes( 
-      x = carat,   
-      y = price        
-      )
+    mapping = aes(
+      x = carat,
+      y = price
+    )
   )
 ```
 
@@ -121,12 +121,12 @@ diamonds %>%
 
 ``` r
 ## TASK: Plot `price`, `carat`, and `cut` below
-diamonds %>% 
-ggplot() +                
-  geom_point(      
-    mapping = aes( 
-      x = carat,   
-      y = price,  
+diamonds %>%
+  ggplot() +
+  geom_point(
+    mapping = aes(
+      x = carat,
+      y = price,
       color = cut
     )
   )

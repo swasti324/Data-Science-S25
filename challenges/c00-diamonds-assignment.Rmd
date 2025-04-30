@@ -1,7 +1,7 @@
 ---
 title: "Getting Started: Diamonds"
 author: "Swasti Jain"
-date: 2020-
+date: 2025
 output:
   github_document:
     toc: true
@@ -59,13 +59,13 @@ In this first stage, you will explore the `diamonds` dataset and document your o
 ```{r q1-task}
 ## TASK: Plot `price` vs `carat` below
 
-diamonds %>% 
-  ggplot()+
+diamonds %>%
+  ggplot() +
   geom_point(
-    mapping = aes( 
-      x = carat,   
-      y = price        
-      )
+    mapping = aes(
+      x = carat,
+      y = price
+    )
   )
 ```
 
@@ -77,12 +77,12 @@ diamonds %>%
 
 ```{r q2-task}
 ## TASK: Plot `price`, `carat`, and `cut` below
-diamonds %>% 
-ggplot() +                
-  geom_point(      
-    mapping = aes( 
-      x = carat,   
-      y = price,  
+diamonds %>%
+  ggplot() +
+  geom_point(
+    mapping = aes(
+      x = carat,
+      y = price,
       color = cut
     )
   )
