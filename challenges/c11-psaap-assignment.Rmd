@@ -22,7 +22,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category | Needs Improvement | Satisfactory |
-|------------------|-----------------------------|-------------------------|
+|----|----|----|
 | Effort | Some task **q**'s left unattempted | All task **q**'s attempted |
 | Observed | Did not document observations, or observations incorrect | Documented correct observations based on analysis |
 | Supported | Some observations not clearly supported by analysis | All observations clearly supported by analysis (table, graph, etc.) |
@@ -75,12 +75,20 @@ df_psaap <- read_csv(filename_psaap)
 ```{r q1-task}
 ## TODO: Perform your initial checks
 
-glimpse(df_psaap)
+head(df_psaap)
+
+distinct(df_psaap, W)
 ```
 
 **Observations**:
 
--   (Take notes here!)
+-   There are a lot of different variables here.
+
+    -   22 total
+
+-   All are numbers (dbl)
+
+-   There are only 4 documented positions for x –\> 0.25, 0.5, 0.75, 1
 
 The important variables in this dataset are:
 
@@ -119,7 +127,7 @@ The primary output of interest is `T_norm = (avg_T - T_f) / T_f`, the normalized
 ##       each identified by different values of idx
 df_psaap %>%
   ggplot() +
-  geom_point(aes(x, T_norm, color = factor(idx)))
+  geom_line(aes(x, T_norm, color = factor(idx)))
 ```
 
 ## Modeling
@@ -174,7 +182,8 @@ cat(rmse_baseline, rmse_cheat, rmse_nonphysical)
 **Observations**:
 
 -   Which model is *most accurate*? Which is *least accurate*?
-    -   The nonphysical one is most accurate and the cheat model is the least accurate
+    -   The cheat one is most accurate and the non physical model is the least accurate
+    -   Since we are using rmse, the closer to 0 the value the more accurate the model.
 -   What *Category* of variable is `avg_T`? Why is it such an effective predictor?
     -   it is an output of average temperature.
     -   Its effective because were using the answer to predict the answer
@@ -237,13 +246,13 @@ print(rmse_q4)
 
     -   C_fp
 -   What is the regression coefficient for `x`? What about the regression coefficient for `T_f`?
-    -   x regression coeff is 1.657 x 10\^(-26) (very close to 0 and thus very correlated)
-    -   The regression coeff for T_f is 7.475 x 10\^(-1) (quite large and thus not well correlated)
+    -   the regression coeff for x is 1.02
+    -   The regression coeff for T_f is -3.79e-4
 -   What is the standard deviation of `x` in `df_psaap`? What about the standard deviation of `T_f`?
     -   The standard deviation for x is 0.2805
     -   The standard deviation for T_f is 38.94204
 -   How do these standard deviations relate to the regression coefficients for `x` and `T_f`?
-    -   the p_value/regression coefficient represents how closely the input is associated with the output. The x is highly correlated with the output so its' p_value is extremely small and its standard deviation is small for this reason. Since T_f is not well related with the output the standard deviation is quite large
+    -   the p_value represents how closely the input is associated with the output. The x is highly correlated with the output so its' p_value is extremely small and its standard deviation is small for this reason. Since T_f is not well related with the output the standard deviation is quite large
 -   Note that literally *all* of the inputs above have *some* effect on the output `T_norm`; so they are all "significant" in that sense. What does this tell us about the limitations of statistical significance for interpreting regression coefficients?
     -   The limitations of only considering statistical significant inputs is that the significance cutoff is fairly arbitrary. The p_value only demonstrates correlation and not causation. We know that all the inputs have *some* effect and perhaps they effect a different input.
 
@@ -349,11 +358,11 @@ bind_rows(
 **Observations**:
 
 -   Which model tends to be more accurate? How can you tell from this predicted-vs-actual plot?
-    -   q4 is more accurate. I can tell as the points follow the trend line closest.
+    -   q4 is more accurate. I can tell as the points follow the reference line (for y = x) closest.
 -   Which model tends to be *more confident* in its predictions? Put differently, which model has *narrower prediction intervals*?
     -   q4 is more confident as the error bars are smaller than the x_only model.
 -   How many predictors does the `fit_simple` model need in order to make a prediction? What about your model `fit_q4`?
-    -   fit simple only has 1 predictor input while q4 has four predictor inputs.
+    -   fit simple only has 1 predictor input while q4 has all inputs. The variables removed were either outputs or model metadata.
 
 Based on these results, you might be tempted to always throw every reasonable variable into the model. For some cases, that might be the best choice. However, some variables might be *outside our control*; for example, variables involving human behavior cannot be fully under our control. Other variables may be *too difficult to measure*; for example, it is *in theory* possible to predict the strength of a component by having detailed knowledge of its microstructure. However, it is *patently infeasible* to do a detailed study of *every single component* that gets used in an airplane.
 

@@ -164,37 +164,49 @@ various locations along the RADIATED SECTION.
 ``` r
 ## TODO: Perform your initial checks
 
-glimpse(df_psaap)
+head(df_psaap)
 ```
 
-    ## Rows: 140
-    ## Columns: 22
-    ## $ x      <dbl> 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.2…
-    ## $ idx    <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, …
-    ## $ L      <dbl> 0.1898058, 0.1511218, 0.1693629, 0.1348453, 0.2009348, 0.159982…
-    ## $ W      <dbl> 0.03421154, 0.04636061, 0.03982547, 0.03252195, 0.04407102, 0.0…
-    ## $ U_0    <dbl> 1.859988, 2.232010, 2.037526, 2.445058, 1.697920, 1.964563, 2.3…
-    ## $ N_p    <dbl> 1600067, 2215857, 1707729, 2076161, 1945272, 1822635, 2364952, …
-    ## $ k_f    <dbl> 0.08322124, 0.11122740, 0.08674231, 0.12083851, 0.09041236, 0.0…
-    ## $ T_f    <dbl> 300.1695, 243.2194, 289.8267, 357.6900, 251.8989, 279.8404, 260…
-    ## $ rho_f  <dbl> 1.1627025, 1.1319406, 1.1019925, 1.2267571, 1.4408823, 0.963726…
-    ## $ mu_f   <dbl> 1.519285e-05, 1.840742e-05, 2.177345e-05, 2.230214e-05, 2.28436…
-    ## $ lam_f  <dbl> 0.03158350, 0.02590530, 0.03487354, 0.03700987, 0.03557159, 0.0…
-    ## $ C_fp   <dbl> 1062.3567, 1113.6519, 951.6687, 997.6194, 936.8270, 1223.7923, …
-    ## $ rho_p  <dbl> 8415.812, 10648.082, 10805.811, 10965.876, 7819.270, 7372.629, …
-    ## $ d_p    <dbl> 1.073764e-05, 1.100549e-05, 1.244840e-05, 9.729835e-06, 1.14198…
-    ## $ C_pv   <dbl> 467.6986, 382.8730, 528.5409, 462.5276, 413.8601, 505.5510, 552…
-    ## $ h      <dbl> 6279.242, 4666.593, 6147.515, 4920.612, 6018.550, 5356.113, 529…
-    ## $ I_0    <dbl> 7876978, 6551358, 6121350, 6363488, 8512473, 7011572, 8268366, …
-    ## $ eps_p  <dbl> 0.4426710, 0.3247988, 0.4027115, 0.3890929, 0.4388801, 0.336167…
-    ## $ avg_q  <dbl> 689522.7, 684218.2, 619206.2, 1070186.0, 577245.1, 648248.9, 70…
-    ## $ avg_T  <dbl> 485.0239, 291.3887, 401.6959, 447.3889, 392.5981, 401.3814, 360…
-    ## $ rms_T  <dbl> 7.613507, 4.185764, 5.612525, 4.475737, 6.945722, 7.579457, 4.1…
-    ## $ T_norm <dbl> 0.6158335, 0.1980487, 0.3859864, 0.2507726, 0.5585543, 0.434322…
+    ## # A tibble: 6 × 22
+    ##       x   idx     L      W   U_0     N_p    k_f   T_f rho_f    mu_f  lam_f  C_fp
+    ##   <dbl> <dbl> <dbl>  <dbl> <dbl>   <dbl>  <dbl> <dbl> <dbl>   <dbl>  <dbl> <dbl>
+    ## 1  0.25     1 0.190 0.0342  1.86  1.60e6 0.0832  300. 1.16  1.52e-5 0.0316 1062.
+    ## 2  0.25     2 0.151 0.0464  2.23  2.22e6 0.111   243. 1.13  1.84e-5 0.0259 1114.
+    ## 3  0.25     3 0.169 0.0398  2.04  1.71e6 0.0867  290. 1.10  2.18e-5 0.0349  952.
+    ## 4  0.25     4 0.135 0.0325  2.45  2.08e6 0.121   358. 1.23  2.23e-5 0.0370  998.
+    ## 5  0.25     5 0.201 0.0441  1.70  1.95e6 0.0904  252. 1.44  2.28e-5 0.0356  937.
+    ## 6  0.25     6 0.160 0.0379  1.96  1.82e6 0.0798  280. 0.964 2.13e-5 0.0249 1224.
+    ## # ℹ 10 more variables: rho_p <dbl>, d_p <dbl>, C_pv <dbl>, h <dbl>, I_0 <dbl>,
+    ## #   eps_p <dbl>, avg_q <dbl>, avg_T <dbl>, rms_T <dbl>, T_norm <dbl>
+
+``` r
+distinct(df_psaap, W)
+```
+
+    ## # A tibble: 35 × 1
+    ##         W
+    ##     <dbl>
+    ##  1 0.0342
+    ##  2 0.0464
+    ##  3 0.0398
+    ##  4 0.0325
+    ##  5 0.0441
+    ##  6 0.0379
+    ##  7 0.0360
+    ##  8 0.0488
+    ##  9 0.0419
+    ## 10 0.0336
+    ## # ℹ 25 more rows
 
 **Observations**:
 
-- (Take notes here!)
+- There are a lot of different variables here.
+
+  - 22 total
+
+- All are numbers (dbl)
+
+- There are only 4 documented positions for x –\> 0.25, 0.5, 0.75, 1
 
 The important variables in this dataset are:
 
@@ -237,7 +249,7 @@ of fluid, for different experimental settings (e.g. different dimensions
 ##       each identified by different values of idx
 df_psaap %>%
   ggplot() +
-  geom_point(aes(x, T_norm, color = factor(idx)))
+  geom_line(aes(x, T_norm, color = factor(idx)))
 ```
 
 ![](c11-psaap-assignment_files/figure-gfm/q2-task-1.png)<!-- -->
@@ -305,8 +317,10 @@ cat(rmse_baseline, rmse_cheat, rmse_nonphysical)
 **Observations**:
 
 - Which model is *most accurate*? Which is *least accurate*?
-  - The nonphysical one is most accurate and the cheat model is the
+  - The cheat one is most accurate and the non physical model is the
     least accurate
+  - Since we are using rmse, the closer to 0 the value the more accurate
+    the model.
 - What *Category* of variable is `avg_T`? Why is it such an effective
   predictor?
   - it is an output of average temperature.
@@ -404,21 +418,19 @@ print(rmse_q4)
   - C_fp
 - What is the regression coefficient for `x`? What about the regression
   coefficient for `T_f`?
-  - x regression coeff is 1.657 x 10^(-26) (very close to 0 and thus
-    very correlated)
-  - The regression coeff for T_f is 7.475 x 10^(-1) (quite large and
-    thus not well correlated)
+  - the regression coeff for x is 1.02
+  - The regression coeff for T_f is -3.79e-4
 - What is the standard deviation of `x` in `df_psaap`? What about the
   standard deviation of `T_f`?
   - The standard deviation for x is 0.2805
   - The standard deviation for T_f is 38.94204
 - How do these standard deviations relate to the regression coefficients
   for `x` and `T_f`?
-  - the p_value/regression coefficient represents how closely the input
-    is associated with the output. The x is highly correlated with the
-    output so its’ p_value is extremely small and its standard deviation
-    is small for this reason. Since T_f is not well related with the
-    output the standard deviation is quite large
+  - the p_value represents how closely the input is associated with the
+    output. The x is highly correlated with the output so its’ p_value
+    is extremely small and its standard deviation is small for this
+    reason. Since T_f is not well related with the output the standard
+    deviation is quite large
 - Note that literally *all* of the inputs above have *some* effect on
   the output `T_norm`; so they are all “significant” in that sense. What
   does this tell us about the limitations of statistical significance
@@ -569,16 +581,16 @@ bind_rows(
 
 - Which model tends to be more accurate? How can you tell from this
   predicted-vs-actual plot?
-  - q4 is more accurate. I can tell as the points follow the trend line
-    closest.
+  - q4 is more accurate. I can tell as the points follow the reference
+    line (for y = x) closest.
 - Which model tends to be *more confident* in its predictions? Put
   differently, which model has *narrower prediction intervals*?
   - q4 is more confident as the error bars are smaller than the x_only
     model.
 - How many predictors does the `fit_simple` model need in order to make
   a prediction? What about your model `fit_q4`?
-  - fit simple only has 1 predictor input while q4 has four predictor
-    inputs.
+  - fit simple only has 1 predictor input while q4 has all inputs. The
+    variables removed were either outputs or model metadata.
 
 Based on these results, you might be tempted to always throw every
 reasonable variable into the model. For some cases, that might be the
