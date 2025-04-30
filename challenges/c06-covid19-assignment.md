@@ -534,7 +534,12 @@ include in your summaries,* and justify why!
 
 df_geda <- df_normalized %>%
   filter(date == max(date)) %>%
-  summarize(mean_cases = mean(cases_per100k, na.rm = TRUE), sd_cases = sd(cases_per100k, na.rm = TRUE), mean_deaths = mean(deaths_per100k, na.rm = TRUE), sd_deaths = sd(deaths_per100k, na.rm = TRUE))
+  summarize(
+    mean_cases = mean(cases_per100k, na.rm = TRUE),
+    sd_cases = sd(cases_per100k, na.rm = TRUE),
+    mean_deaths = mean(deaths_per100k, na.rm = TRUE),
+    sd_deaths = sd(deaths_per100k, na.rm = TRUE)
+  )
 
 
 
@@ -637,6 +642,10 @@ df_max_deaths
 - (Note your observations here!)
   - The population of Loving Texas is very small with 102 people and the
     cases per 100k is nearly 7.75 times higher than the mean.
+
+  - The same goes for McMullen which has the highest deaths_per_100k.
+    their populaiton was 662. The death cases are about 3.6 higher in
+    McMullen than the mean.
 
     The population of these counties are relatively small. The highest
     being 18,040 people in Bethel Census Area Alaska
