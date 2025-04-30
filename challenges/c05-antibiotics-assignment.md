@@ -1,7 +1,7 @@
 Antibiotics
 ================
-(Your name here)
-2020-
+Swasti Jain
+4/30/25
 
 *Purpose*: Creating effective data visualizations is an *iterative*
 process; very rarely will the first graph you make be the most
@@ -157,16 +157,21 @@ is Gram positive or negative.
 
 ``` r
 # WRITE YOUR CODE HERE
-df_antibiotics_longer<- df_antibiotics %>% 
+df_antibiotics_longer <- df_antibiotics %>%
   pivot_longer(
     cols = c(penicillin, streptomycin, neomycin),
     names_to = "antibiotics",
     values_to = "MCI"
   )
 df_antibiotics_longer %>%
-    ggplot(aes(x = bacteria, y = MCI, color = gram)) +
-    geom_point(size = 2) +
-    facet_grid(~ antibiotics)
+  ggplot(aes(x = bacteria, y = MCI, color = gram, shape = antibiotics)) +
+  geom_point(size = 2) +
+  scale_y_log10() +
+  geom_hline(aes(yintercept = 0.1, linetype = "MIC Threshold"), linewidth = 1) +
+  scale_linetype_manual(name = "", values = c("MIC Threshold" = "dotted")) +
+  theme(
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)
+  )
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.1-1.png)<!-- -->
@@ -183,12 +188,17 @@ your other visuals.
 
 ``` r
 # WRITE YOUR CODE HERE
+
 df_antibiotics_longer %>%
-  
-    ggplot(aes(x = antibiotics, y = MCI, color = bacteria)) +
-    geom_jitter(size = 3, width = 0.1, height = 0.1) +
-    scale_y_log10() +  
-    facet_grid(~ gram)
+  ggplot(aes(x = bacteria, y = MCI, color = antibiotics)) +
+  geom_jitter(size = 3, width = 0.2, height = 0.1) +
+  scale_y_log10() +
+  geom_hline(aes(yintercept = 0.1, linetype = "MIC Threshold"), linewidth = 1) +
+  scale_linetype_manual(name = "", values = c("MIC Threshold" = "dotted")) +
+  facet_grid(~gram, scales = "free_x", space = "free_x") +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.2-1.png)<!-- -->
@@ -204,9 +214,13 @@ your other visuals.
 
 ``` r
 # WRITE YOUR CODE HERE
+
 df_antibiotics_longer %>%
-    ggplot(aes(x = antibiotics, y = MCI, color = gram)) +
-    geom_boxplot()
+  ggplot(aes(x = antibiotics, y = MCI, color = gram)) +
+  geom_jitter(size = 3, width = 0.2, height = 0) +
+  scale_y_log10() +
+  geom_hline(aes(yintercept = 0.1, linetype = "MIC Threshold"), linewidth = 1) +
+  scale_linetype_manual(name = "", values = c("MIC Threshold" = "dotted"))
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.3-1.png)<!-- -->
@@ -222,15 +236,13 @@ your other visuals.
 
 ``` r
 df_antibiotics_longer %>%
-    ggplot(aes(x = antibiotics, y = MCI)) +
-    geom_boxplot() +
-    scale_y_log10() +  
-    facet_grid(~gram)+
-    geom_point(
-    data = . %>% filter(bacteria %in% c( "Aerobacter aerogenes","Klebsiella pneumoniae", "Streptococcus viridans")),
-    mapping = aes(color = bacteria),
-    size = 2
-  )
+  filter(antibiotics == "penicillin") %>%
+  mutate(bacteria = fct_reorder(bacteria, MCI)) %>%
+  mutate(bacteria = fct_reorder(bacteria, gram)) %>%
+  ggplot(aes(bacteria, MCI)) +
+  geom_bar(aes(fill = gram), stat = "identity", width = .75) +
+  scale_y_log10() +
+  coord_flip()
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.4-1.png)<!-- -->
@@ -247,10 +259,13 @@ your other visuals.
 ``` r
 # WRITE YOUR CODE HERE
 df_antibiotics_longer %>%
-    ggplot(aes(x = bacteria, y = antibiotics, fill = MCI)) +
-    geom_tile() +
-    scale_fill_viridis_c(option = "plasma", trans = "log10", direction = -1) +
-    facet_grid(~gram)
+  ggplot(aes(x = bacteria, y = antibiotics, fill = MCI)) +
+  geom_tile() +
+  geom_text(aes(label = round(MCI, 2)), color = "white", size = 2) + # Adding MCI labels
+
+  scale_fill_viridis_c(option = "plasma", trans = "log10", direction = -1) +
+  facet_grid(~gram) +
+  coord_flip()
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.5-1.png)<!-- -->
@@ -279,20 +294,21 @@ your response here) - Which of your visuals above (1 through 5) is
 **most effective** at helping to answer this question? - (Write your
 response here) - Why? - (Write your response here)
 
-The last graph utilizes a heat mapping structure which denotes the
-intensity of the MCI on a logarithmic scale. I think this is the most
-effective at answering the variance of the three antibiotics against
-different genera and gram stain.
+Out of the 3 antibiotics, Streptomycin has the least range in Minimum
+Inhibitory Concentration (MIC). There isnt a clear distinction between
+which gram stain it is more effective for.
 
-Highlights of this graph:
+Penicillin on the other hand has the greatest range from the three
+antibiotics. However there is also a clearer distinction for gram stain.
+If the gram stain is positive, penicillin is typically effective under
+0.1 MIC dosage.
 
-- split/facet into the positive and negative gram distributions
+Neomycin has a greater range than streptomycin but no truly discernible
+distinction between MIC level and gram stain.
 
-- The color scale is inverted (the brighter the color the less MCI,
-  which is desirable)
-
-- The color scale is logarithmic which provides greater variance for the
-  smaller quantities
+The third graph shows the individual points and the gram stain. I found
+this the most helpful as it gives a big picture overview of the data
+that isn’t overwhelming.
 
 #### Guiding Question 2
 
@@ -308,29 +324,16 @@ your response here) - Which of your visuals above (1 through 5) is
 **most effective** at helping to answer this question? - (Write your
 response here) - Why? - (Write your response here)
 
-I think my second graph is most effective at helping to answer this
+I think my fourth graph is most effective at helping to answer this
 question.
 
-In this graph we can see there are striking similarities in the MCI and
-gram stain for the Diplococcus pneumoniae with many of the Strep
+This graph focuses on the use of penicillin as an antibiotic and
+arranges the bars in order of MIC dosage and gram stain. We can see that
+the diplococcus pneumoniae is categorized with many of the strep
 variants. It is possible due to the similar features such as the thick
 peptidoglycan layer in the cell walls, denoted by the gram-positive
-stain, and the similar MCI levels for the three antibiotics, the
-scientists at the time found it useful to relate the Diplococcus
-pneumoniae to a Strep variant.
-
-Highlights of this graph:
-
-- The y-axis is logarithmic which provides greater variance for the
-  smaller quantities
-
-- The points have been jittered slightly so they are all comparable
-  despite being contained in their respective antibiotic column regions.
-
-- The color scale shows the individual 16 bacteria which is helpful in
-  finding patterns between different variants.
-
-#### 
+stain, and the similar MCI levels, the scientists at the time found it
+useful to relate the Diplococcus pneumoniae to a Strep variant.
 
 # References
 
